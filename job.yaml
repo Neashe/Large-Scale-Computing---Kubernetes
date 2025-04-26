@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: populate-nfs-content
+spec:
+  template:
+    spec:
+      containers:
+      - name: writer
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "<html><body><h1>Hello from NFS!</h1><p>This was written by a Kubernetes Job!</p></body></html>" > /mnt/web/index.html
+        volumeMounts:
+        - name: web-content
+          mountPath: /mnt/web
+      restartPolicy: OnFailure
+      volumes:
+      - name: web-content
+        persistentVolumeClaim:
+          claimName: my-nfs-pvc
